@@ -1,0 +1,26 @@
+## Visual Studio
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+bin/
+obj/
+
+# Visual Studio cache
+.vs/
+
+#APP SETTINGS
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+
+# Keep template
+!appsettings.Template.json
+
+# Uploads folder (optional)
+wwwroot/Uploads/

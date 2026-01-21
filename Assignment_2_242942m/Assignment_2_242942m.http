@@ -1,0 +1,9 @@
+﻿@Assignment_2_242942m_HostAddress = https://localhost:7054
+
+GET {{Assignment_2_242942m_HostAddress}}/account/disable2fa/{id}
+
+###
+
+POST {{Assignment_2_242942m_HostAddress}}/account/disable2faconfirmed/{id}
+
+###

@@ -1,0 +1,81 @@
+﻿@model Assignment_2_242942m.Models.Verify2FAViewModel
+@{
+    ViewData["Title"] = "Enable 2FA";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h3 class="mb-2">Enable Two-Factor Authentication</h3>
+                    <p class="text-muted mb-4">
+                        Scan the QR code using Google/Microsoft Authenticator, then enter the 6-digit code to confirm.
+                    </p>
+
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="text-center mb-4">
+                        @if (ViewBag.QrUri != null)
+                        {
+                            <img class="img-thumbnail"
+                                 style="max-width:220px"
+                                 src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=@Uri.EscapeDataString((string)ViewBag.QrUri)" />
+                        }
+                    </div>
+
+                    <div class="accordion mb-4" id="manualKeyAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingManual">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseManual" aria-expanded="false" aria-controls="collapseManual">
+                                    Can’t scan? Enter setup key manually
+                                </button>
+                            </h2>
+                            <div id="collapseManual" class="accordion-collapse collapse" aria-labelledby="headingManual"
+                                 data-bs-parent="#manualKeyAccordion">
+                                <div class="accordion-body">
+                                    <div class="small text-muted mb-2">Setup key (Base32)</div>
+                                    <div class="p-2 bg-light border rounded" style="word-break:break-all">
+                                        <code>@ViewBag.Secret</code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="Enable2FA" method="post" class="mt-3">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label asp-for="Code" class="form-label fw-semibold">6-digit code</label>
+                            <input asp-for="Code" class="form-control form-control-lg" autocomplete="one-time-code" inputmode="numeric" />
+                            <span asp-validation-for="Code" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Confirm enable</button>
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-lg">Back</a>
+                        </div>
+                    </form>
+
+                    <div class="small text-muted mt-4">
+                        Tip: The code changes every ~30 seconds in your authenticator app.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

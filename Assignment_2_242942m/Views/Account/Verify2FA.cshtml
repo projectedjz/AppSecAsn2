@@ -1,0 +1,45 @@
+﻿@model Assignment_2_242942m.Models.Verify2FAViewModel
+@{
+    ViewData["Title"] = "Verify 2FA";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h3 class="mb-2">Verify Two-Factor Authentication</h3>
+                    <p class="text-muted mb-4">
+                        Open your authenticator app and enter the current 6-digit code.
+                    </p>
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <form asp-action="Verify2FA" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label asp-for="Code" class="form-label fw-semibold">6-digit code</label>
+                            <input asp-for="Code" class="form-control form-control-lg"
+                                   autocomplete="one-time-code" inputmode="numeric" />
+                            <span asp-validation-for="Code" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Verify & Sign in</button>
+                            <a asp-action="Login" class="btn btn-outline-secondary">Back to login</a>
+                        </div>
+                    </form>
+
+                    <div class="small text-muted mt-3">
+                        If you lost your authenticator app entry, disable/reset 2FA and re-enroll.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
