@@ -27,6 +27,13 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
+
+                    <!-- Demo error-page buttons for instructor preview -->
+                    <div class="d-flex align-items-center">
+                        <a class="btn btn-sm btn-outline-danger me-2" asp-controller="Error" asp-action="Error404">Error 404</a>
+                        <a class="btn btn-sm btn-outline-warning me-2" asp-controller="Error" asp-action="Error500">Error 500</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-controller="Error" asp-action="Error403">Error 403</a>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -45,6 +52,9 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script src="~/js/session-timeout-banner.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

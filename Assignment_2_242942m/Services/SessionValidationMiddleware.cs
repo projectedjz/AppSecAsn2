@@ -29,6 +29,16 @@ namespace Assignment_2_242942m.Services
                         ctx.Response.Redirect("/Account/Login");
                         return;
                     }
+
+                    // DON'T touch the ticket for the session info endpoints.
+                    // Those endpoints are used by the client to display remaining time
+                    // and should NOT count as user activity.
+                    var path = ctx.Request.Path.Value ?? string.Empty;
+                    if (!path.StartsWith("/Session", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Extend server-side last-activity timestamp (implements inactivity sliding)
+                        await session.TouchTicketAsync(memberId, ticket);
+                    }
                 }
             }
 

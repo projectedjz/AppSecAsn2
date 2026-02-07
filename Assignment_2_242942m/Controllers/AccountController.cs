@@ -614,5 +614,42 @@ namespace Assignment_2_242942m.Controllers
             _db.AuditLogs.Add(new AuditLog { MemberId = memberId, Action = action });
             await _db.SaveChangesAsync();
         }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> SessionRemaining()
+        {
+            var idStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var ticket = User.FindFirstValue("SessionTicket");
+            if (!int.TryParse(idStr, out var memberId) || string.IsNullOrWhiteSpace(ticket))
+                return Json(new { remaining = 0 });
+
+            var st = await _db.SessionTickets.FirstOrDefaultAsync(s => s.MemberId == memberId && s.Ticket == ticket);
+            if (st == null) return Json(new { remaining = 0 });
+
+            var expiry = _cfg.GetValue<int>("Session:TicketExpirySeconds", 30);
+            var elapsed = (int)(DateTime.UtcNow - st.CreatedAt).TotalSeconds;
+            var remaining = Math.Max(0, expiry - elapsed);
+            return Json(new { remaining });
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> KeepAlive()
+        {
+            var idStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var ticket = User.FindFirstValue("SessionTicket");
+            if (!int.TryParse(idStr, out var memberId) || string.IsNullOrWhiteSpace(ticket))
+                return Json(new { ok = false, remaining = 0 });
+
+            await _session.TouchTicketAsync(memberId, ticket);
+
+            var st = await _db.SessionTickets.FirstOrDefaultAsync(s => s.MemberId == memberId && s.Ticket == ticket);
+            if (st == null) return Json(new { ok = false, remaining = 0 });
+
+            var expiry = _cfg.GetValue<int>("Session:TicketExpirySeconds", 30);
+            var remaining = Math.Max(0, expiry - (int)(DateTime.UtcNow - st.CreatedAt).TotalSeconds);
+            return Json(new { ok = true, remaining });
+        }
     }
 }
