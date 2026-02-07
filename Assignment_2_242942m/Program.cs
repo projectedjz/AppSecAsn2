@@ -68,6 +68,10 @@ app.UseStaticFiles();
 app.UseSession();
 app.UseRouting();
 app.UseAuthentication();
+
+// after app.UseAuthentication();
+app.UseMiddleware<Assignment_2_242942m.Services.SessionValidationMiddleware>();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(

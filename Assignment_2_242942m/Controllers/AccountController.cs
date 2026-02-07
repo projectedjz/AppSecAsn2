@@ -168,10 +168,14 @@ namespace Assignment_2_242942m.Controllers
             // 3.  password check  (increments fail count)
             if (!BCrypt.Net.BCrypt.EnhancedVerify(vm.Password, member.PasswordHash))
             {
+                // Read lockout settings from configuration (defaults applied)
+                var maxFailedAttempts = _cfg.GetValue<int>("Lockout:MaxFailedAttempts", 3);
+                var lockoutMinutes = _cfg.GetValue<int>("Lockout:LockoutMinutes", 5);
+
                 member.AccessFailedCount++;
-                if (member.AccessFailedCount >= 2)
+                if (member.AccessFailedCount >= maxFailedAttempts)
                 {
-                    member.LockoutEnd = DateTime.UtcNow.AddMinutes(5);
+                    member.LockoutEnd = DateTime.UtcNow.AddMinutes(lockoutMinutes);
                     member.AccessFailedCount = 0;
                 }
                 await _db.SaveChangesAsync();
@@ -376,7 +380,7 @@ namespace Assignment_2_242942m.Controllers
             {
                 var token = _token.GenerateToken();
                 member.ResetToken = token;
-                member.ResetTokenExpiry = DateTime.Now.AddMinutes(15);
+                member.ResetTokenExpiry = DateTime.UtcNow.AddMinutes(15); // use UTC
                 await _db.SaveChangesAsync();
 
                 var callback = Url.Action("ConfirmReset", "Account",
@@ -405,6 +409,14 @@ namespace Assignment_2_242942m.Controllers
 
             var member = await _db.Members.FirstOrDefaultAsync(m => m.Email == vm.Email);
             if (member == null) return BadRequest();
+
+            // Ensure token matches the one stored in DB and is not expired
+            if (string.IsNullOrWhiteSpace(member.ResetToken) || member.ResetToken != vm.Token ||
+                !member.ResetTokenExpiry.HasValue || member.ResetTokenExpiry.Value < DateTime.UtcNow)
+            {
+                ModelState.AddModelError("", "Invalid or expired token");
+                return View(vm);
+            }
 
             // password history check (max 2)
             var hist = await _db.PasswordHistories
