@@ -145,6 +145,7 @@ namespace Assignment_2_242942m.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel vm)
         {
             if (!ModelState.IsValid) return View(vm);
@@ -225,6 +226,7 @@ namespace Assignment_2_242942m.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             var id = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
