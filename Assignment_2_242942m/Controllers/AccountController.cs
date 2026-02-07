@@ -595,10 +595,6 @@ namespace Assignment_2_242942m.Controllers
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
-
-        //[HttpGet]
-        //public IActionResult TestRoute() => Content("route ok");
-
         private async Task LogAsync(int memberId, string action)
         {
             _db.AuditLogs.Add(new AuditLog { MemberId = memberId, Action = action });
