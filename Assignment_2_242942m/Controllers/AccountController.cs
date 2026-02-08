@@ -101,6 +101,13 @@ namespace Assignment_2_242942m.Controllers
                     ModelState.AddModelError("Photo", "Only JPG/JPEG images are allowed.");
                     return View(vm);
                 }
+
+                const long maxBytes = 5 * 1024 * 1024; // 5 MB
+                if (vm.Photo != null && vm.Photo.Length > maxBytes)
+                {
+                    ModelState.AddModelError("Photo", "File size must be less than 5MB.");
+                    return View(vm);
+                }
             }
 
             if (!ModelState.IsValid) return View(vm);
